@@ -5,76 +5,7 @@ Visualize the hierarchies of Notion folders by using tree structure.
 Enable users to figure out the whole structure of their Notion folder. 
 
 
-🔒 Privacy Policy
-This project ("Workspace Tree Visualizer") uses the Notion API to access and visualize your workspace data. This policy outlines how your data is collected, used, and protected.
-
-1. Information Collected
-This application only accesses data that you explicitly allow via the Notion OAuth 2.0 authorization flow. To provide its core functionality, the application may collect the following information:
-
-User Information: Your Notion user ID, name, and email address, as provided by Notion during the authentication process.
-
-Page Titles and Database Titles: To display page and folder names as nodes in the visual tree.
-
-Page Content: We access page content solely for the purpose of identifying child pages (sub-pages) and blocks to build the hierarchical tree structure. This application does not read, store, or process any other personal or business content (like text, images, or other blocks) within your pages.
-
-Database Structures and Metadata: To identify pages stored within databases and correctly place them within the workspace hierarchy.
-
-2. Data Storage and Usage
-All collected data (as listed in Section 1) is processed temporarily in your browser's memory. This data is used exclusively to generate and render the interactive workspace tree visualization.
-
-No data is permanently stored on any server, database, or local file.
-
-Data is not used for any purpose other than displaying your workspace structure back to you.
-
-3. Data Sharing
-No personal or workspace data is shared with any third parties. All data processing occurs locally within your browser.
-
-4. Data Retention
-We handle your data and tokens with the following retention policies:
-
-Workspace Data: Data such as page titles and page content is processed "in-memory" and is discarded immediately after the visualization is generated. This data is never stored.
-
-Authentication Tokens: Your Notion OAuth access token is stored securely in your browser's local storage to keep you logged in for future sessions. This token is deleted when you manually log out of the application or if you revoke access from your Notion workspace settings.
-
-5. Contact
-If you have any questions or requests regarding this policy, please contact: 📧 chickenm00@dgu.ac.kr
-
-Last updated: November 4, 2025
-
-
-⚖️ Terms of Use
-
-By using this application ("Workspace Tree Visualizer"), you agree to the following terms:
-
-1. **Purpose**  
-   This application is designed to visualize your Notion workspace structure using the official Notion API. It is intended for personal and educational use.
-
-2. **Disclaimer**  
-   This project is provided **“as is”** without any warranties or guarantees.  
-   The developer is not responsible for any data loss, errors, or damages arising from the use of this application.
-
-3. **User Responsibility**  
-   By authorizing this application via OAuth 2.0, you acknowledge that you grant limited access to your Notion workspace data.  
-   You are responsible for reviewing and revoking access at any time through your Notion account settings. 
-
-4. **Data Handling**  
-   The app processes your workspace data only for visualization purposes and does not permanently store or share it.  
-   For more details, please refer to the [Privacy Policy](#-privacy-policy) above.
-
-5. **Service Availability**  
-   The developer may modify, suspend, or discontinue this application at any time without prior notice.
-
-6. **Intellectual Property**  
-   “Notion” and the Notion logo are trademarks of Notion Labs, Inc.  
-   This project is **not affiliated with or endorsed by Notion Labs, Inc.**
-
-7. **Contact**  
-   For any questions about these terms, please contact:  
-   📧 **chickenm00@dgu.ac.kr**
-
-_Last updated: November 4, 2025_
-
-<!-- 사용 기술
+사용 기술
 - 백엔드  
 o Node.js – 서버 런타임 환경  
 o Express.js – REST API 구축  
@@ -88,4 +19,4 @@ o Notion API – Notion 계층 구조 데이터 가져오기
 - 개발자 도구  
 o Git & GitHub – 버전 관리  
 o Postman – Notion API 테스트  
-o VS Code – 개발 IDE   -->
+o VS Code – 개발 IDE
