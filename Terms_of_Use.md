@@ -24,7 +24,7 @@ You are responsible for reviewing and revoking access at any time through your N
 
 ## 4. Data Handling
 The app processes your workspace data only for visualization purposes and does not permanently store or share it.  
-For more details, please refer to the [Privacy Policy](./Privacy_Policy.md).
+For more details, please refer to the [Privacy Policy](./Privacy.md).
 
 ---
 
