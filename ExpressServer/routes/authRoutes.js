@@ -35,6 +35,8 @@ router.get("/callback", async (req, res) => {
             }
         );
 
+        //인증 후 받은 정보 확인
+        console.log("Notion API Response:", response.data);
         const { access_token, workspace_id, workspace_name } = response.data;
 
         // 토큰 확인 

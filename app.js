@@ -4,7 +4,7 @@ const authRouter = require("./ExpressServer/routes/authRoutes.js");
 
 dotenv.config();
 const app = express();
-app.use(express.static("Client"));
+app.use(express.static("Client")); // Client 디렉토리 아래 있는 index.html을 사용함 
 
 //라우터 등록 
 app.use("/", authRouter)
@@ -12,6 +12,5 @@ app.use("/", authRouter)
 app.listen(process.env.PORT, () => {
     console.log(`${process.env.PORT}번 포트에서 서버 실행 중`);
 });
-
 
 
