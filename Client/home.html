@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>인증 후 기본 홈페이지</title>
+</head>
+<body style="font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; text-align: center; margin-top: 80px;">
+  <h1>Notion 인증 완료 🎉</h1>
+  <p id="directoryDisplay" style="margin: 20px 0; font-size: 16px;">선택된 디렉토리를 불러오는 중...</p>
+
+  <button id="generateTreeBtn" style="padding: 10px 20px; margin: 10px; cursor: pointer;">트리 생성하기</button>
+  <button id="reselectBtn" style="padding: 10px 20px; margin: 10px; cursor: pointer;">디렉토리 다시 선택 (재로그인)</button>
+
+  <script>
+    // Fetch and display selected directory info
+    async function loadDirectory() {
+      try {
+        const res = await fetch('/api/current-directory', { credentials: 'include' });
+        if (!res.ok) throw new Error('Failed to fetch directory info');
+        const data = await res.json();
+        document.getElementById('directoryDisplay').textContent = `선택된 디렉토리: ${data.directoryName}`;
+      } catch (err) {
+        document.getElementById('directoryDisplay').textContent = '선택된 디렉토리를 불러올 수 없습니다.';
+        console.error(err);
+      }
+    }
+
+    // "트리 생성하기" 버튼 클릭 시
+    document.getElementById('generateTreeBtn').addEventListener('click', async () => {
+      try {
+        const res = await fetch('/api/tree', { credentials: 'include' });
+        if (!res.ok) throw new Error('트리 생성 실패');
+        window.location.href = '/Client/tree.html';
+      } catch (err) {
+        alert('트리 생성 중 오류가 발생했습니다.');
+        console.error(err);
+      }
+    });
+
+    // "디렉토리 다시 선택(재로그인)" 버튼 클릭 시
+    document.getElementById('reselectBtn').addEventListener('click', () => {
+      window.location.href = '/';
+    });
+
+    document.addEventListener('DOMContentLoaded', loadDirectory);
+  </script>
+</body>
+</html>
