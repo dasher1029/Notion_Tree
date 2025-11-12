@@ -35,7 +35,7 @@ router.get("/callback", async (req, res) => {
             }
         );
 
-        //인증 후 받은 정보 확인
+        //인증 후 받은 정보 확인 
         console.log("Notion API Response:", response.data);
         const { access_token, workspace_id, workspace_name } = response.data;
 
@@ -43,7 +43,7 @@ router.get("/callback", async (req, res) => {
         console.log("Access Token:", access_token);
         console.log("Workspace:", workspace_name);
 
-        res.send(`인증 완료! workspace: ${workspace_name}`);
+        res.redirect("/home.html");
     } catch (error) {
         console.error(error.response?.data || error.message);
         res.status(500).send("인증 실패");
