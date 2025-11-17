@@ -1,57 +1,45 @@
-// ExpressServer/controllers/authController.js
 const axios = require("axios");
 
-// 🔹 Notion 로그인 URL 생성
 exports.login = (req, res) => {
-    const authURI = new URL("https://api.notion.com/v1/oauth/authorize");
+  const url = new URL("https://api.notion.com/v1/oauth/authorize");
+  url.searchParams.set("client_id", process.env.NOTION_CLIENT_ID);
+  url.searchParams.set("response_type", "code");
+  url.searchParams.set("owner", "user");
+  url.searchParams.set("redirect_uri", process.env.REDIRECT_URI);
 
-    authURI.searchParams.set("client_id", process.env.NOTION_CLIENT_ID);
-    authURI.searchParams.set("response_type", "code");
-    authURI.searchParams.set("owner", "user");
-    authURI.searchParams.set("redirect_uri", process.env.REDIRECT_URI);
-
-    return res.redirect(authURI.toString());
+  res.redirect(url.toString());
 };
 
-// 🔹 Notion OAuth callback 처리
 exports.callback = async (req, res) => {
-    const code = req.query.code;
+  const code = req.query.code;
+  if (!code) return res.status(400).send("인증 코드가 없습니다.");
 
-    if (!code) return res.status(400).send("인증 코드가 없습니다.");
+  try {
+    const tokenRes = await axios.post(
+      "https://api.notion.com/v1/oauth/token",
+      {
+        grant_type: "authorization_code",
+        code: code,
+        redirect_uri: process.env.REDIRECT_URI
+      },
+      {
+        auth: {
+          username: process.env.NOTION_CLIENT_ID,
+          password: process.env.NOTION_CLIENT_SECRET
+        }
+      }
+    );
 
-    try {
-        const response = await axios.post(
-            "https://api.notion.com/v1/oauth/token",
-            {
-                grant_type: "authorization_code",
-                code: code,
-                redirect_uri: process.env.REDIRECT_URI,
-            },
-            {
-                auth: {
-                    username: process.env.NOTION_CLIENT_ID,
-                    password: process.env.NOTION_CLIENT_SECRET,
-                },
-            }
-        );
+    const { access_token } = tokenRes.data;
 
-        // 토큰 정보 로그 출력 (확인용)
-        console.log("Notion API Response:", response.data);
+    res.cookie("notion_token", access_token, {
+      httpOnly: true,
+      secure: false
+    });
 
-        const { access_token } = response.data;
-
-        // 🔹 Access Token을 쿠키에 저장
-        res.cookie("notion_token", access_token, {
-            httpOnly: true,
-            secure: false, 
-            maxAge: 1000 * 60 * 60 * 24, // 24시간
-        });
-
-        // 인증 후 home.html로 이동
-        return res.redirect("/home.html");
-
-    } catch (error) {
-        console.error(error.response?.data || error.message);
-        return res.status(500).send("인증 실패");
-    }
+    res.redirect("/home.html");
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("토큰 발급 실패");
+  }
 };

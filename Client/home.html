@@ -1,49 +1,70 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>인증 후 기본 홈페이지</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>디렉토리 선택</title>
 </head>
-<body style="font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; text-align: center; margin-top: 80px;">
-  <h1>Notion 인증 완료 🎉</h1>
-  <p id="directoryDisplay" style="margin: 20px 0; font-size: 16px;">선택된 디렉토리를 불러오는 중...</p>
+<body style="font-family: system-ui; padding: 40px;">
+  <h1>📁 트리 생성할 루트 페이지 선택</h1>
 
-  <button id="generateTreeBtn" style="padding: 10px 20px; margin: 10px; cursor: pointer;">트리 생성하기</button>
-  <button id="reselectBtn" style="padding: 10px 20px; margin: 10px; cursor: pointer;">디렉토리 다시 선택 (재로그인)</button>
+  <p>아래 목록에서 트리의 루트로 사용할 Notion 페이지를 선택하세요.</p>
+
+  <div id="pageList" style="margin-top:20px;"></div>
+
+  <button id="reselectBtn" style="padding: 8px 16px; margin-top:20px;">
+    다시 로그인하기
+  </button>
 
   <script>
-    // Fetch and display selected directory info
-    async function loadDirectory() {
+    // 🔹 Notion 페이지 리스트 불러오기
+    async function loadPages() {
       try {
-        const res = await fetch('/api/current-directory', { credentials: 'include' });
-        if (!res.ok) throw new Error('Failed to fetch directory info');
+        const res = await fetch("/api/pages", { credentials: "include" });
         const data = await res.json();
-        document.getElementById('directoryDisplay').textContent = `선택된 디렉토리: ${data.directoryName}`;
+
+        const container = document.getElementById("pageList");
+        container.innerHTML = "";
+
+        data.results.forEach(page => {
+          const title = page.properties?.title?.title?.[0]?.plain_text || "(제목 없음)";
+          const pageId = page.id.replace(/-/g, "");
+
+          const btn = document.createElement("button");
+          btn.textContent = title;
+          btn.style = "display:block; padding:8px 16px; margin-bottom:6px; cursor:pointer;";
+          btn.onclick = () => selectDirectory(pageId);
+
+          container.appendChild(btn);
+        });
       } catch (err) {
-        document.getElementById('directoryDisplay').textContent = '선택된 디렉토리를 불러올 수 없습니다.';
         console.error(err);
+        alert("페이지 목록을 불러올 수 없습니다.");
       }
     }
 
-    // "트리 생성하기" 버튼 클릭 시
-    document.getElementById('generateTreeBtn').addEventListener('click', async () => {
+    // 🔹 선택한 페이지를 서버 쿠키에 저장
+    async function selectDirectory(pageId) {
       try {
-        const res = await fetch('/api/tree', { credentials: 'include' });
-        if (!res.ok) throw new Error('트리 생성 실패');
-        window.location.href = '/Client/tree.html';
+        await fetch("/api/select-directory", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ pageId })
+        });
+
+        // 선택 완료 → 트리 페이지로
+        window.location.href = "/tree.html";
       } catch (err) {
-        alert('트리 생성 중 오류가 발생했습니다.');
-        console.error(err);
+        alert("페이지 선택 실패");
       }
-    });
+    }
 
-    // "디렉토리 다시 선택(재로그인)" 버튼 클릭 시
-    document.getElementById('reselectBtn').addEventListener('click', () => {
-      window.location.href = '/';
-    });
+    document.getElementById("reselectBtn").onclick = () => {
+      window.location.href = "/";
+    };
 
-    document.addEventListener('DOMContentLoaded', loadDirectory);
+    loadPages();
   </script>
 </body>
 </html>

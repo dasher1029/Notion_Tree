@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Notion OAuth Test</title>
+  <title>Notion OAuth Login</title>
   <style>
     body { font-family: system-ui, -apple-system, sans-serif; margin: 40px; }
     .card { max-width: 460px; border: 1px solid #e5e7eb; border-radius: 12px; padding: 24px; }
@@ -17,14 +17,14 @@
     .small { color:#6b7280; font-size: 0.875rem; margin-top: 12px; }
   </style>
 </head>
+
 <body>
   <div class="card">
-    <h1>Notion OAuth 2.0 Test</h1>
-    <p>아래 버튼을 누르면 서버의 <code>/login</code> 엔드포인트로 이동하여 Notion 인증을 시작합니다.</p>
+    <h1>Notion OAuth 2.0 Login</h1>
+    <p>아래 버튼을 눌러 Notion 인증을 시작하세요.</p>
     <p><a class="button" href="/login">Login with Notion</a></p>
-    <p class="small">
-      Callback URL은 <code>REDIRECT_URI</code> 환경변수와 서버 라우트 경로가 정확히 일치해야 합니다.
-    </p>
+    <p class="small">Callback URL은 REDIRECT_URI 환경변수와 정확히 일치해야 합니다.</p>
   </div>
 </body>
+
 </html>

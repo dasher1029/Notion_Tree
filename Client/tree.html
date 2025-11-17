@@ -1,98 +1,88 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>트리 렌더링 페이지</title>
-  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+  <title>D3.js Tree View</title>
   <style>
-    .node circle { fill: #8ecae6; stroke: #023047; stroke-width: 2px; } 
-    .link { fill: none; stroke: #999; stroke-width: 1.5px; } 
+    body { font-family: system-ui; }
+    svg { border: 1px solid #ddd; display: block; margin: 0 auto; }
+    .tree-container {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+    }
   </style>
 </head>
 <body>
-  <div id="status" style="font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; font-size: 14px; margin: 8px 0;">Loading...</div>
-  <svg width="800" height="600"></svg>
+  <h1 style="text-align: center;">📊 Notion 트리 시각화</h1>
 
+  <div class="tree-container">
+    <svg id="tree"></svg>
+  </div>
+
+  <script src="https://d3js.org/d3.v7.min.js"></script>
   <script>
-    // --- Client-side D3 renderer that binds API data dynamically ---
+    async function loadTree() {
+      const res = await fetch("/api/tree-data", { credentials: "include" });
+      const data = await res.json();
 
-    // 1) Basic references
-    const statusEl = document.getElementById("status");
-    const svg = d3.select("svg");
-    const width = +svg.attr("width");
-    const height = +svg.attr("height");
-
-    // 2) Render function: receives { name, children[] } and draws the tree
-    function renderTree(data) {
-      // Clear previous drawing (if any)
-      svg.selectAll("*").remove();
-
-      // Prepare viewport
-      svg.attr("viewBox", [0, 0, width, height]);
-
-      // Build hierarchy and layout coordinates
       const root = d3.hierarchy(data);
-      const treeLayout = d3.tree().size([height, width - 200]);
-      treeLayout(root); // mutates root with x/y positions
+
+      // 🌟 노드 개수 기반으로 SVG 크기 자동 조절
+      const nodeCount = root.descendants().length;
+      const height = nodeCount * 80 + 200;   // 노드 간격 증가
+      const width = 1200;
+
+      const svg = d3.select("#tree")
+        .attr("width", width)
+        .attr("height", height);
+
+      // 🌟 트리 레이아웃 간격 크게 조정
+      const treeLayout = d3.tree()
+        .nodeSize([120, 260]); // x 간격, y 간격 넓힘
+
+      treeLayout(root);
+
+      const g = svg.append("g")
+        .attr("transform", `translate(${width / 2}, 50)`);
 
       // Links
-      svg.selectAll(".link")
+      g.selectAll(".link")
         .data(root.links())
-        .enter().append("path")
+        .enter()
+        .append("line")
         .attr("class", "link")
-        .attr("d", d3.linkHorizontal()
-          .x(d => d.y)
-          .y(d => d.x));
+        .attr("x1", d => d.source.x)
+        .attr("y1", d => d.source.y)
+        .attr("x2", d => d.target.x)
+        .attr("y2", d => d.target.y)
+        .attr("stroke", "#aaa");
 
       // Nodes
-      const node = svg.selectAll(".node")
+      g.selectAll(".node")
         .data(root.descendants())
-        .enter().append("g")
+        .enter()
+        .append("circle")
         .attr("class", "node")
-        .attr("transform", d => `translate(${d.y},${d.x})`);
+        .attr("cx", d => d.x)
+        .attr("cy", d => d.y)
+        .attr("r", 6)
+        .attr("fill", "#4f46e5");
 
-      node.append("circle").attr("r", 6);
-      node.append("text")
-        .attr("dy", 3)
-        .attr("x", d => d.children ? -10 : 10)
-        .style("text-anchor", d => d.children ? "end" : "start")
-        .text(d => d.data?.name ?? "(no name)");
+      // Labels
+      g.selectAll(".label")
+        .data(root.descendants())
+        .enter()
+        .append("text")
+        .attr("class", "label")
+        .attr("x", d => d.x + 12)
+        .attr("y", d => d.y + 4)
+        .text(d => d.data.title)
+        .attr("font-size", "14px");  // 가독성 향상
     }
 
-    // 3) Fetch tree data from your Express API and bind it into the renderer
-    async function loadAndRender() {
-      try {
-        statusEl.textContent = "Loading tree...";
-        // IMPORTANT: include credentials so cookies (access_token, session) are sent
-        const res = await fetch("/api/tree", { credentials: "include" });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
-        const data = await res.json();
-
-        // Optional sanity checks to help with debugging
-        if (!data || typeof data !== "object") {
-          throw new Error("Invalid payload: expected an object");
-        }
-        if (!("name" in data)) {
-          console.warn("Missing 'name' in root data; assigning default.");
-          data.name = data.name ?? "Workspace";
-        }
-        if (!("children" in data)) {
-          console.warn("Missing 'children' array; assigning empty list.");
-          data.children = data.children ?? [];
-        }
-
-        renderTree(data);
-        statusEl.textContent = ""; // clear status on success
-      } catch (err) {
-        console.error(err);
-        statusEl.textContent = "Failed to load tree. Check console for details.";
-      }
-    }
-
-    // 4) Kick off when the page is ready
-    document.addEventListener("DOMContentLoaded", loadAndRender);
+    loadTree();
   </script>
 </body>
 </html>
