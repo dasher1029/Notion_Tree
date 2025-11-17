@@ -12,7 +12,7 @@ o Express.js – REST API 구축
 o Axios – Notion API 호출  
 - 프론트엔드  
 o HTML/CSS/JavaScript – 기본 화면 구성  
-o jsTree – 트리 시각화 라이브러리  
+o D3.js – 트리 시각화 라이브러리  
 o Fetch API – 백엔드에서 제공하는 트리 JSON 데이터 불러오기  
 - 외부 API  
 o Notion API – Notion 계층 구조 데이터 가져오기  
