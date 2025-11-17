@@ -3,14 +3,29 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
-  <title>D3.js Tree View</title>
+  <title>Tree View</title>
   <style>
     body { font-family: system-ui; }
-    svg { border: 1px solid #ddd; display: block; margin: 0 auto; }
     .tree-container {
       display: flex;
       justify-content: center;
       width: 100%;
+      height: 800px;
+      overflow: auto;
+      border: 1px solid #ddd;
+    }
+    svg { 
+      display: block; 
+    }
+    .link {
+      fill: none;
+      stroke: #aaa;
+    }
+    .node {
+      fill: #4f46e5;
+    }
+    .label {
+      font-size: 14px;
     }
   </style>
 </head>
@@ -29,57 +44,69 @@
 
       const root = d3.hierarchy(data);
 
-      // 🌟 노드 개수 기반으로 SVG 크기 자동 조절
-      const nodeCount = root.descendants().length;
-      const height = nodeCount * 80 + 200;   // 노드 간격 증가
-      const width = 1200;
-
-      const svg = d3.select("#tree")
-        .attr("width", width)
-        .attr("height", height);
-
-      // 🌟 트리 레이아웃 간격 크게 조정
+      // 🌟 트리 레이아웃 간격 설정
       const treeLayout = d3.tree()
-        .nodeSize([120, 260]); // x 간격, y 간격 넓힘
+        .nodeSize([120, 260]); // [가로 간격, 세로 간격]
 
+      // 레이아웃을 먼저 계산시킵니다.
       treeLayout(root);
 
-      const g = svg.append("g")
-        .attr("transform", `translate(${width / 2}, 50)`);
+      // 🌟 1. (겹침 방지) 텍스트를 고려하여 실제 트리의 바운더리(경계)를 계산합니다.
+      let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+      root.descendants().forEach(d => {
+        if (d.x < minX) minX = d.x;
+        if (d.x > maxX) maxX = d.x;
+        if (d.y < minY) minY = d.y;
+        if (d.y > maxY) maxY = d.y;
+      });
 
-      // Links
+      // 텍스트 라벨 등을 위한 여백(padding)
+      const padding = { top: 50, right: 150, bottom: 80, left: 150 };
+
+      // 🌟 2. (스크롤바) SVG의 전체 크기를 트리의 실제 크기에 맞게 동적으로 설정
+      const svgWidth = (maxX - minX) + padding.left + padding.right;
+      const svgHeight = (maxY - minY) + padding.top + padding.bottom;
+
+      const svg = d3.select("#tree")
+        .attr("width", svgWidth)   // 👈 계산된 전체 너비
+        .attr("height", svgHeight); // 👈 계산된 전체 높이
+                                     // (이 크기가 .tree-container보다 크면 스크롤바가 생김)
+
+      // 🌟 3. <g> 태그를 이동시켜 트리가 SVG 중앙에 오도록 함
+      const g = svg.append("g")
+        .attr("transform", `translate(${-minX + padding.left}, ${-minY + padding.top})`);
+
+
+      // Links (선 그리기)
+      // d3.linkVertical()을 사용해 부드러운 곡선으로 변경
       g.selectAll(".link")
         .data(root.links())
         .enter()
-        .append("line")
+        .append("path") // 👈 "line" 대신 "path" 사용
         .attr("class", "link")
-        .attr("x1", d => d.source.x)
-        .attr("y1", d => d.source.y)
-        .attr("x2", d => d.target.x)
-        .attr("y2", d => d.target.y)
-        .attr("stroke", "#aaa");
+        .attr("d", d3.linkVertical() // 👈 수직 링크 생성기
+          .x(d => d.x)
+          .y(d => d.y));
 
-      // Nodes
-      g.selectAll(".node")
+      // Nodes (원 그리기)
+      const node = g.selectAll(".node")
         .data(root.descendants())
         .enter()
-        .append("circle")
+        .append("g") // 👈 <g> 태그로 원과 텍스트를 그룹화
         .attr("class", "node")
-        .attr("cx", d => d.x)
-        .attr("cy", d => d.y)
+        .attr("transform", d => `translate(${d.x},${d.y})`); // 👈 cx, cy 대신 transform 사용
+
+      node.append("circle")
         .attr("r", 6)
         .attr("fill", "#4f46e5");
 
-      // Labels
-      g.selectAll(".label")
-        .data(root.descendants())
-        .enter()
-        .append("text")
+      // Labels (텍스트 그리기)
+      // 🌟 4. (겹침 방지) 텍스트를 노드 '아래'에 중앙 정렬하여 겹침을 방지
+      node.append("text")
         .attr("class", "label")
-        .attr("x", d => d.x + 12)
-        .attr("y", d => d.y + 4)
-        .text(d => d.data.title)
-        .attr("font-size", "14px");  // 가독성 향상
+        .attr("y", 20) // 👈 원 아래쪽 20px 지점
+        .attr("text-anchor", "middle") // 👈 텍스트를 중앙 정렬
+        .text(d => d.data.title);
     }
 
     loadTree();
