@@ -1,13 +1,13 @@
+#배포용 
+
+version: "latest"
+
 services:
-  container_1:
-    image: notion_tree
-    build: 
-      context: .
-      dockerfile: Dockerfile
+  notion_tree_app:
+    image: dasher1038/notion-tree:latest
+    container_name: notion_tree_app
     ports:
       - "3000:3000"
     env_file:
       - .env
-    volumes:
-      - .:/app
     restart: unless-stopped
