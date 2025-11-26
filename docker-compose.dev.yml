@@ -1,0 +1,14 @@
+#Jenkins 이미지 생성용 
+services:
+  container_1:
+    image: notion-tree
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+    restart: unless-stopped
