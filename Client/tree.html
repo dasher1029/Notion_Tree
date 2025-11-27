@@ -1,115 +1,321 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
-  <title>Tree View</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notion Tree - Visualization</title>
   <style>
-    body { font-family: system-ui; }
-    .tree-container {
+    :root {
+      --primary-color: #4a7c59;
+      --primary-hover: #3b6347;
+      --bg-overlay: rgba(255, 255, 255, 0.9);
+      --glass-border: rgba(255, 255, 255, 0.6);
+      --text-main: #2c3e50;
+      --text-sub: #5d6d7e;
+      --node-color: #4a7c59;
+      --link-color: #a3b18a;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+      background: url('nature_bg.png') no-repeat center center fixed, linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
+      background-color: #e0eafc;
+      background-size: cover;
+      color: var(--text-main);
       display: flex;
-      justify-content: center;
-      width: 100%;
-      height: 800px;
+      flex-direction: column;
+      align-items: center;
+      overflow: hidden;
+      /* Prevent body scroll, let container scroll */
+    }
+
+    .header {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      text-align: center;
+      background: var(--bg-overlay);
+      padding: 15px 30px;
+      border-radius: 50px;
+      backdrop-filter: blur(5px);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      white-space: nowrap;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 1.5rem;
+      color: var(--primary-color);
+    }
+
+    .tree-container {
+      margin-top: 100px;
+      /* Space for header */
+      width: 90%;
+      height: calc(100vh - 140px);
       overflow: auto;
-      border: 1px solid #ddd;
+      background: rgba(255, 255, 255, 0.6);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      border: 1px solid var(--glass-border);
+      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+      display: flex;
+      /* justify-content: center; Removed to prevent clipping when scrolling */
+      align-items: flex-start;
+      position: relative;
     }
-    svg { 
-      display: block; 
+
+    /* Custom Scrollbar */
+    .tree-container::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
     }
+
+    .tree-container::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 10px;
+    }
+
+    .tree-container::-webkit-scrollbar-thumb {
+      background: rgba(74, 124, 89, 0.5);
+      border-radius: 10px;
+    }
+
+    .tree-container::-webkit-scrollbar-thumb:hover {
+      background: rgba(74, 124, 89, 0.8);
+    }
+
+    svg {
+      display: block;
+      margin: auto;
+      /* Center when smaller than container, safe scroll when larger */
+    }
+
     .link {
       fill: none;
-      stroke: #aaa;
+      stroke: var(--link-color);
+      stroke-width: 2px;
+      opacity: 0.6;
+      transition: all 0.3s;
     }
-    .node {
-      fill: #4f46e5;
+
+    .node circle {
+      fill: var(--node-color);
+      stroke: white;
+      stroke-width: 2px;
+      transition: all 0.3s;
     }
+
+    .node:hover circle {
+      fill: var(--primary-hover);
+      r: 8;
+      cursor: pointer;
+    }
+
     .label {
       font-size: 14px;
+      font-weight: 500;
+      fill: var(--text-main);
+      text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+    }
+
+    .back-btn {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: var(--bg-overlay);
+      border: none;
+      padding: 10px 15px;
+      border-radius: 50px;
+      cursor: pointer;
+      font-weight: 600;
+      color: var(--primary-color);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      transition: all 0.2s;
+      z-index: 20;
+    }
+
+    .back-btn:hover {
+      background: var(--primary-color);
+      color: white;
+    }
+
+    /* Zoom Controls */
+    .zoom-controls {
+      position: absolute;
+      bottom: 30px;
+      right: 30px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 20;
+    }
+
+    .zoom-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: none;
+      background: var(--primary-color);
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: all 0.2s;
+    }
+
+    .zoom-btn:hover {
+      background: var(--primary-hover);
+      transform: scale(1.1);
     }
   </style>
 </head>
+
 <body>
-  <h1 style="text-align: center;">📊 Notion 트리 시각화</h1>
+  <button class="back-btn" onclick="location.href='/home.html'">← 뒤로가기</button>
+
+  <div class="header">
+    <h1>📊 Notion 트리 시각화</h1>
+  </div>
 
   <div class="tree-container">
     <svg id="tree"></svg>
+
+    <div class="zoom-controls">
+      <button class="zoom-btn" onclick="zoom(0.1)">+</button>
+      <button class="zoom-btn" onclick="zoom(-0.1)">-</button>
+      <button class="zoom-btn" onclick="resetZoom()" style="font-size: 1rem;">↺</button>
+    </div>
   </div>
 
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <script>
+    let currentScale = 1;
+    let baseWidth = 0, baseHeight = 0;
+    let baseTx = 0, baseTy = 0;
+    let svgSelection, gSelection;
+
+    function zoom(delta) {
+      const newScale = currentScale + delta;
+      if (newScale < 0.1) return; // Prevent too small
+      currentScale = newScale;
+      updateZoom();
+    }
+
+    function resetZoom() {
+      currentScale = 1;
+      updateZoom();
+    }
+
+    function updateZoom() {
+      if (svgSelection && gSelection) {
+        // 1. Update SVG size to trigger scrollbars
+        svgSelection
+          .attr("width", baseWidth * currentScale)
+          .attr("height", baseHeight * currentScale);
+
+        // 2. Scale the content
+        // We use scale(s) translate(tx, ty) which scales the coordinate system first.
+        // But wait, if we scale first, the translation units are also scaled.
+        // We want the original translation (tx, ty) to be scaled to (tx*s, ty*s).
+        // scale(s) translate(tx, ty) -> effective translation is tx*s, ty*s.
+        // This is exactly what we want to keep the tree centered/positioned relatively.
+        gSelection.attr("transform", `scale(${currentScale}) translate(${baseTx}, ${baseTy})`);
+      }
+    }
+
     async function loadTree() {
-      const res = await fetch("/api/tree-data", { credentials: "include" });
-      const data = await res.json();
+      try {
+        const res = await fetch("/api/tree-data", { credentials: "include" });
+        const data = await res.json();
 
-      const root = d3.hierarchy(data);
+        if (!data || Object.keys(data).length === 0) {
+          document.querySelector('.tree-container').innerHTML = '<div style="margin:auto; color:#555;">데이터가 없습니다.</div>';
+          return;
+        }
 
-      // 🌟 트리 레이아웃 간격 설정
-      const treeLayout = d3.tree()
-        .nodeSize([120, 260]); // [가로 간격, 세로 간격]
+        const root = d3.hierarchy(data);
 
-      // 레이아웃을 먼저 계산시킵니다.
-      treeLayout(root);
+        // 🌟 트리 레이아웃 간격 설정
+        const treeLayout = d3.tree()
+          .nodeSize([150, 100]); // [가로 간격, 세로 간격]
 
-      // 🌟 1. (겹침 방지) 텍스트를 고려하여 실제 트리의 바운더리(경계)를 계산합니다.
-      let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
-      root.descendants().forEach(d => {
-        if (d.x < minX) minX = d.x;
-        if (d.x > maxX) maxX = d.x;
-        if (d.y < minY) minY = d.y;
-        if (d.y > maxY) maxY = d.y;
-      });
+        // 레이아웃 계산
+        treeLayout(root);
 
-      // 텍스트 라벨 등을 위한 여백(padding)
-      const padding = { top: 50, right: 150, bottom: 80, left: 150 };
+        // 🌟 1. 트리 바운더리 계산
+        let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+        root.descendants().forEach(d => {
+          if (d.x < minX) minX = d.x;
+          if (d.x > maxX) maxX = d.x;
+          if (d.y < minY) minY = d.y;
+          if (d.y > maxY) maxY = d.y;
+        });
 
-      // 🌟 2. (스크롤바) SVG의 전체 크기를 트리의 실제 크기에 맞게 동적으로 설정
-      const svgWidth = (maxX - minX) + padding.left + padding.right;
-      const svgHeight = (maxY - minY) + padding.top + padding.bottom;
+        // 여백 설정
+        const padding = { top: 50, right: 150, bottom: 80, left: 150 };
 
-      const svg = d3.select("#tree")
-        .attr("width", svgWidth)   // 👈 계산된 전체 너비
-        .attr("height", svgHeight); // 👈 계산된 전체 높이
-                                     // (이 크기가 .tree-container보다 크면 스크롤바가 생김)
+        // 🌟 2. 기본 크기 및 위치 계산
+        baseWidth = (maxX - minX) + padding.left + padding.right;
+        baseHeight = (maxY - minY) + padding.top + padding.bottom;
+        baseTx = -minX + padding.left;
+        baseTy = -minY + padding.top;
 
-      // 🌟 3. <g> 태그를 이동시켜 트리가 SVG 중앙에 오도록 함
-      const g = svg.append("g")
-        .attr("transform", `translate(${-minX + padding.left}, ${-minY + padding.top})`);
+        // SVG 선택 및 초기 설정
+        svgSelection = d3.select("#tree");
 
+        // 초기 줌 적용 (width/height 설정)
+        updateZoom();
 
-      // Links (선 그리기)
-      // d3.linkVertical()을 사용해 부드러운 곡선으로 변경
-      g.selectAll(".link")
-        .data(root.links())
-        .enter()
-        .append("path") // 👈 "line" 대신 "path" 사용
-        .attr("class", "link")
-        .attr("d", d3.linkVertical() // 👈 수직 링크 생성기
-          .x(d => d.x)
-          .y(d => d.y));
+        // 🌟 3. <g> 태그 생성 (transform은 updateZoom에서 관리)
+        gSelection = svgSelection.append("g");
+        updateZoom(); // Apply transform
 
-      // Nodes (원 그리기)
-      const node = g.selectAll(".node")
-        .data(root.descendants())
-        .enter()
-        .append("g") // 👈 <g> 태그로 원과 텍스트를 그룹화
-        .attr("class", "node")
-        .attr("transform", d => `translate(${d.x},${d.y})`); // 👈 cx, cy 대신 transform 사용
+        // Links (선 그리기)
+        gSelection.selectAll(".link")
+          .data(root.links())
+          .enter()
+          .append("path")
+          .attr("class", "link")
+          .attr("d", d3.linkVertical()
+            .x(d => d.x)
+            .y(d => d.y));
 
-      node.append("circle")
-        .attr("r", 6)
-        .attr("fill", "#4f46e5");
+        // Nodes (원 그리기)
+        const node = gSelection.selectAll(".node")
+          .data(root.descendants())
+          .enter()
+          .append("g")
+          .attr("class", "node")
+          .attr("transform", d => `translate(${d.x},${d.y})`);
 
-      // Labels (텍스트 그리기)
-      // 🌟 4. (겹침 방지) 텍스트를 노드 '아래'에 중앙 정렬하여 겹침을 방지
-      node.append("text")
-        .attr("class", "label")
-        .attr("y", 20) // 👈 원 아래쪽 20px 지점
-        .attr("text-anchor", "middle") // 👈 텍스트를 중앙 정렬
-        .text(d => d.data.title);
+        node.append("circle")
+          .attr("r", 6);
+
+        // Labels (텍스트 그리기)
+        node.append("text")
+          .attr("class", "label")
+          .attr("y", 20)
+          .attr("text-anchor", "middle")
+          .text(d => d.data.title);
+
+      } catch (err) {
+        console.error(err);
+        document.querySelector('.tree-container').innerHTML = '<div style="margin:auto; color:red;">트리 데이터를 불러오는 중 오류가 발생했습니다.</div>';
+      }
     }
 
     loadTree();
   </script>
 </body>
+
 </html>

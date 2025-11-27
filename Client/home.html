@@ -1,23 +1,134 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>디렉토리 선택</title>
+  <title>Notion Tree - Select Page</title>
+  <style>
+    :root {
+      --primary-color: #4a7c59;
+      --primary-hover: #3b6347;
+      --bg-overlay: rgba(255, 255, 255, 0.9);
+      --glass-border: rgba(255, 255, 255, 0.6);
+      --text-main: #2c3e50;
+      --text-sub: #5d6d7e;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+      background: url('nature_bg.png') no-repeat center center fixed, linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
+      background-color: #e0eafc;
+      background-size: cover;
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .header {
+      margin-top: 60px;
+      text-align: center;
+      background: var(--bg-overlay);
+      padding: 20px 40px;
+      border-radius: 50px;
+      backdrop-filter: blur(5px);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      margin-bottom: 40px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 1.8rem;
+      color: var(--primary-color);
+    }
+
+    .subtitle {
+      margin-top: 8px;
+      color: var(--text-sub);
+      font-size: 0.95rem;
+    }
+
+    #pageList {
+      width: 90%;
+      max-width: 1000px;
+      /* Increased max-width for grid */
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+      /* Increased gap */
+      padding-bottom: 40px;
+    }
+
+    .page-card {
+      background: white;
+      padding: 20px;
+      border-radius: 15px;
+      border: 1px solid #eee;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      text-align: left;
+      font-size: 1rem;
+      color: var(--text-main);
+      width: 100%;
+      box-sizing: border-box;
+      height: 100%;
+      /* Ensure full height in grid cell */
+    }
+
+    .page-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(74, 124, 89, 0.2);
+      border-color: var(--primary-color);
+    }
+
+    .icon {
+      margin-right: 15px;
+      font-size: 1.5rem;
+    }
+
+    #reselectBtn {
+      margin-top: auto;
+      margin-bottom: 40px;
+      background: transparent;
+      border: 2px solid var(--primary-color);
+      color: var(--primary-color);
+      padding: 10px 25px;
+      border-radius: 30px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    #reselectBtn:hover {
+      background: var(--primary-color);
+      color: white;
+    }
+  </style>
 </head>
-<body style="font-family: system-ui; padding: 40px;">
-  <h1>📁 트리 생성할 루트 페이지 선택</h1>
 
-  <p>아래 목록에서 트리의 루트로 사용할 Notion 페이지를 선택하세요.</p>
+<body>
+  <div class="header">
+    <h1>🌿 루트 페이지 선택</h1>
+    <div class="subtitle">트리로 만들 Notion 페이지를 선택해주세요</div>
+  </div>
 
-  <div id="pageList" style="margin-top:20px;"></div>
+  <div id="pageList">
+    <!-- Loading state -->
+    <div style="text-align:center; color: white; font-weight:bold;">페이지 목록을 불러오는 중...</div>
+  </div>
 
-  <button id="reselectBtn" style="padding: 8px 16px; margin-top:20px;">
-    다시 로그인하기
+  <button id="reselectBtn">
+    로그인 다시 하기
   </button>
 
   <script>
-    // 🔹 Notion 페이지 리스트 불러오기
     async function loadPages() {
       try {
         const res = await fetch("/api/pages", { credentials: "include" });
@@ -26,24 +137,30 @@
         const container = document.getElementById("pageList");
         container.innerHTML = "";
 
+        if (!data.results || data.results.length === 0) {
+          container.innerHTML = '<div style="text-align:center; background:white; padding:20px; border-radius:10px;">페이지가 없습니다.</div>';
+          return;
+        }
+
         data.results.forEach(page => {
           const title = page.properties?.title?.title?.[0]?.plain_text || "(제목 없음)";
           const pageId = page.id.replace(/-/g, "");
+          const icon = page.icon?.emoji || "📄"; // Use emoji icon if available, else default
 
           const btn = document.createElement("button");
-          btn.textContent = title;
-          btn.style = "display:block; padding:8px 16px; margin-bottom:6px; cursor:pointer;";
+          btn.className = "page-card";
+          btn.innerHTML = `<span class="icon">${icon}</span><span>${title}</span>`;
           btn.onclick = () => selectDirectory(pageId);
 
           container.appendChild(btn);
         });
       } catch (err) {
         console.error(err);
-        alert("페이지 목록을 불러올 수 없습니다.");
+        const container = document.getElementById("pageList");
+        container.innerHTML = '<div style="text-align:center; background:white; padding:20px; border-radius:10px; color:red;">페이지 목록을 불러올 수 없습니다.</div>';
       }
     }
 
-    // 🔹 선택한 페이지를 서버 쿠키에 저장
     async function selectDirectory(pageId) {
       try {
         await fetch("/api/select-directory", {
@@ -52,8 +169,6 @@
           credentials: "include",
           body: JSON.stringify({ pageId })
         });
-
-        // 선택 완료 → 트리 페이지로
         window.location.href = "/tree.html";
       } catch (err) {
         alert("페이지 선택 실패");
@@ -67,4 +182,5 @@
     loadPages();
   </script>
 </body>
+
 </html>
