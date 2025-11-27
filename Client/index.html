@@ -1,29 +1,95 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Notion OAuth Login</title>
+  <title>Notion Tree - Login</title>
   <style>
-    body { font-family: system-ui, -apple-system, sans-serif; margin: 40px; }
-    .card { max-width: 460px; border: 1px solid #e5e7eb; border-radius: 12px; padding: 24px; }
-    h1 { font-size: 1.25rem; margin: 0 0 12px; }
-    p { color: #374151; }
-    a.button {
-      display: inline-block; padding: 10px 16px; border-radius: 8px;
-      border: 1px solid #111827; text-decoration: none; color: #111827; font-weight: 600;
+    :root {
+      --primary-color: #4a7c59;
+      /* Sage Green */
+      --primary-hover: #3b6347;
+      --bg-overlay: rgba(255, 255, 255, 0.85);
+      --glass-border: rgba(255, 255, 255, 0.5);
+      --text-main: #2c3e50;
+      --text-sub: #5d6d7e;
     }
-    a.button:hover { background: #f3f4f6; }
-    .small { color:#6b7280; font-size: 0.875rem; margin-top: 12px; }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: url('nature_bg.png') no-repeat center center fixed, linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
+      background-color: #e0eafc;
+      background-size: cover;
+      color: var(--text-main);
+    }
+
+    .container {
+      background: var(--bg-overlay);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      padding: 40px;
+      border-radius: 20px;
+      border: 1px solid var(--glass-border);
+      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+      text-align: center;
+      max-width: 400px;
+      width: 90%;
+    }
+
+    h1 {
+      margin-bottom: 10px;
+      font-size: 2rem;
+      color: var(--primary-color);
+      font-weight: 700;
+    }
+
+    p {
+      margin-bottom: 30px;
+      color: var(--text-sub);
+      line-height: 1.5;
+    }
+
+    .btn {
+      display: inline-block;
+      background-color: var(--primary-color);
+      color: white;
+      padding: 12px 30px;
+      border-radius: 50px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 6px rgba(74, 124, 89, 0.3);
+    }
+
+    .btn:hover {
+      background-color: var(--primary-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 8px rgba(74, 124, 89, 0.4);
+    }
+
+    .footer {
+      margin-top: 20px;
+      font-size: 0.85rem;
+      color: #888;
+    }
   </style>
 </head>
 
 <body>
-  <div class="card">
-    <h1>Notion OAuth 2.0 Login</h1>
-    <p>아래 버튼을 눌러 Notion 인증을 시작하세요.</p>
-    <p><a class="button" href="/login">Login with Notion</a></p>
-    <p class="small">Callback URL은 REDIRECT_URI 환경변수와 정확히 일치해야 합니다.</p>
+  <div class="container">
+    <h1>Notion Tree</h1>
+    <p>Notion 페이지 구조를<br>아름다운 트리로 시각화하세요.</p>
+    <a href="/login" class="btn">Login with Notion</a>
+    <div class="footer">
+      Powered by Notion API
+    </div>
   </div>
 </body>
 
