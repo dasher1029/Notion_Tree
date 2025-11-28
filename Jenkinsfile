@@ -15,7 +15,13 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    def dockerImage = docker.build("${IMAGE_NAME}:latest", ".")
+                    sh """
+                        docker buildx create --use
+                        docker buildx build \
+                            --platform linux/amd64 \
+                            -t $DOCKER_USER/${IMAGE_NAME}:latest \
+                            . --push
+                    """
                 }
             }
         }
