@@ -8,6 +8,6 @@ services:
     container_name: notion_tree_app
     ports:
       - "3000:3000"
-    env_file:
-      - .env
-    restart: unless-stopped
+    entrypoint: ["/app/fetch_env.sh"]
+    command: ["node", "app.js"]
+    restart: always
