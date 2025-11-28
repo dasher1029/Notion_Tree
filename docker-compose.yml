@@ -9,5 +9,4 @@ services:
     ports:
       - "3000:3000"
     entrypoint: ["/app/fetch_env.sh"]
-    command: ["node", "app.js"]
     restart: always
