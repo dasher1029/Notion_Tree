@@ -1,12 +1,11 @@
-#배포용 
+#배포용
 
-version: "latest"
+version: "3.9"
 
 services:
   notion_tree_app:
     image: dasher1038/notion-tree:latest
     container_name: notion_tree_app
     ports:
-      - "3000:3000"
+      - "80:3000"   # 또는 3000:3000 (보안 그룹에서 열어야 함)
     entrypoint: ["/app/fetch_env.sh"]
-    restart: always
