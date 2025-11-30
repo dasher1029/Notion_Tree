@@ -10,6 +10,5 @@ COPY . .
 
 RUN chmod +x /app/fetch_env.sh
 
-
 EXPOSE 3000
 CMD ["node", "app.js"]
