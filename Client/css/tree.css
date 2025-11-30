@@ -1,0 +1,171 @@
+:root {
+    --primary-color: #4a7c59;
+    --primary-hover: #3b6347;
+    --bg-overlay: rgba(255, 255, 255, 0.9);
+    --glass-border: rgba(255, 255, 255, 0.6);
+    --text-main: #2c3e50;
+    --text-sub: #5d6d7e;
+    --node-color: #4a7c59;
+    --link-color: #a3b18a;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    min-height: 100vh;
+    background: url('../nature_bg.png') no-repeat center center fixed, linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
+    background-color: #e0eafc;
+    background-size: cover;
+    color: var(--text-main);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow: hidden;
+    /* Prevent body scroll, let container scroll */
+}
+
+.header {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    text-align: center;
+    background: var(--bg-overlay);
+    padding: 15px 30px;
+    border-radius: 50px;
+    backdrop-filter: blur(5px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    white-space: nowrap;
+}
+
+h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: var(--primary-color);
+}
+
+.tree-container {
+    margin-top: 100px;
+    /* Space for header */
+    width: 90%;
+    height: calc(100vh - 140px);
+    overflow: auto;
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+    display: flex;
+    /* justify-content: center; Removed to prevent clipping when scrolling */
+    align-items: flex-start;
+    position: relative;
+}
+
+/* Custom Scrollbar */
+.tree-container::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+.tree-container::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+}
+
+.tree-container::-webkit-scrollbar-thumb {
+    background: rgba(74, 124, 89, 0.5);
+    border-radius: 10px;
+}
+
+.tree-container::-webkit-scrollbar-thumb:hover {
+    background: rgba(74, 124, 89, 0.8);
+}
+
+svg {
+    display: block;
+    margin: auto;
+    /* Center when smaller than container, safe scroll when larger */
+}
+
+.link {
+    fill: none;
+    stroke: var(--link-color);
+    stroke-width: 2px;
+    opacity: 0.6;
+    transition: all 0.3s;
+}
+
+.node circle {
+    fill: var(--node-color);
+    stroke: white;
+    stroke-width: 2px;
+    transition: all 0.3s;
+}
+
+.node:hover circle {
+    fill: var(--primary-hover);
+    r: 8;
+    cursor: pointer;
+}
+
+.label {
+    font-size: 14px;
+    font-weight: 500;
+    fill: var(--text-main);
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+}
+
+.back-btn {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: var(--bg-overlay);
+    border: none;
+    padding: 10px 15px;
+    border-radius: 50px;
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--primary-color);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s;
+    z-index: 20;
+}
+
+.back-btn:hover {
+    background: var(--primary-color);
+    color: white;
+}
+
+/* Zoom Controls */
+.zoom-controls {
+    position: absolute;
+    bottom: 30px;
+    right: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 20;
+}
+
+.zoom-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    background: var(--primary-color);
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.2s;
+}
+
+.zoom-btn:hover {
+    background: var(--primary-hover);
+    transform: scale(1.1);
+}
