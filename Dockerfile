@@ -14,7 +14,7 @@ RUN apk add --no-cache \
     curl \
     groff \
     less \
-    && pip install awscli \
+    aws-cli \
     && chmod +x /app/fetch_env.sh
 
 EXPOSE 3000
