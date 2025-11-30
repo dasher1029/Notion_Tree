@@ -34,7 +34,7 @@ exports.callback = async (req, res) => {
 
     res.cookie("notion_token", access_token, {
       httpOnly: true,
-      secure: false
+      secure: process.env.NODE_ENV === "production"
     });
 
     res.redirect("/home.html");

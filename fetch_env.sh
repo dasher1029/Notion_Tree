@@ -3,7 +3,9 @@
 echo "📥 Loading environment variables from SSM Parameter Store..."
 
 # prefix 설정
+# prefix 설정
 PREFIX="/notion-tree/prod"
+export NODE_ENV=production
 
 # 리스트 목록
 PARAMS=(
@@ -11,6 +13,8 @@ PARAMS=(
   "NOTION_CLIENT_SECRET"
   "PORT"
   "REDIRECT_URI"
+  "SSL_CERT"
+  "SSL_KEY"
 )
 
 # AWS SSM 호출 루프
