@@ -1,0 +1,106 @@
+:root {
+    --primary-color: #4a7c59;
+    --primary-hover: #3b6347;
+    --bg-overlay: rgba(255, 255, 255, 0.9);
+    --glass-border: rgba(255, 255, 255, 0.6);
+    --text-main: #2c3e50;
+    --text-sub: #5d6d7e;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    min-height: 100vh;
+    background: url('../nature_bg.png') no-repeat center center fixed, linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
+    background-color: #e0eafc;
+    background-size: cover;
+    color: var(--text-main);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.header {
+    margin-top: 60px;
+    text-align: center;
+    background: var(--bg-overlay);
+    padding: 20px 40px;
+    border-radius: 50px;
+    -webkit-backdrop-filter: blur(5px);
+    /* Safari support */
+    backdrop-filter: blur(5px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 40px;
+}
+
+h1 {
+    margin: 0;
+    font-size: 1.8rem;
+    color: var(--primary-color);
+}
+
+.subtitle {
+    margin-top: 8px;
+    color: var(--text-sub);
+    font-size: 0.95rem;
+}
+
+#pageList {
+    width: 90%;
+    max-width: 1000px;
+    /* Increased max-width for grid */
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    /* Increased gap */
+    padding-bottom: 40px;
+}
+
+.page-card {
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+    border: 1px solid #eee;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    text-align: left;
+    font-size: 1rem;
+    color: var(--text-main);
+    width: 100%;
+    box-sizing: border-box;
+    height: 100%;
+    /* Ensure full height in grid cell */
+}
+
+.page-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(74, 124, 89, 0.2);
+    border-color: var(--primary-color);
+}
+
+.icon {
+    margin-right: 15px;
+    font-size: 1.5rem;
+}
+
+#reselectBtn {
+    margin-top: auto;
+    margin-bottom: 40px;
+    background: transparent;
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color);
+    padding: 10px 25px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+#reselectBtn:hover {
+    background: var(--primary-color);
+    color: white;
+}

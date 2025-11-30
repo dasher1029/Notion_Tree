@@ -1,0 +1,73 @@
+:root {
+  --primary-color: #4a7c59;
+  /* Sage Green */
+  --primary-hover: #3b6347;
+  --bg-overlay: rgba(255, 255, 255, 0.85);
+  --glass-border: rgba(255, 255, 255, 0.5);
+  --text-main: #2c3e50;
+  --text-sub: #5d6d7e;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: url('../nature_bg.png') no-repeat center center fixed, linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
+  background-color: #e0eafc;
+  background-size: cover;
+  color: var(--text-main);
+}
+
+.container {
+  background: var(--bg-overlay);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  padding: 40px;
+  border-radius: 20px;
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+  text-align: center;
+  max-width: 400px;
+  width: 90%;
+}
+
+h1 {
+  margin-bottom: 10px;
+  font-size: 2rem;
+  color: var(--primary-color);
+  font-weight: 700;
+}
+
+p {
+  margin-bottom: 30px;
+  color: var(--text-sub);
+  line-height: 1.5;
+}
+
+.btn {
+  display: inline-block;
+  background-color: var(--primary-color);
+  color: white;
+  padding: 12px 30px;
+  border-radius: 50px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(74, 124, 89, 0.3);
+}
+
+.btn:hover {
+  background-color: var(--primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 8px rgba(74, 124, 89, 0.4);
+}
+
+.footer {
+  margin-top: 20px;
+  font-size: 0.85rem;
+  color: #888;
+}
