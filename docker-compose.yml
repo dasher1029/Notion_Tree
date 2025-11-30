@@ -7,5 +7,5 @@ services:
     image: dasher1038/notion-tree:latest
     container_name: notion_tree_app
     ports:
-      - "80:3000"   # 또는 3000:3000 (보안 그룹에서 열어야 함)
-    entrypoint: ["/app/fetch_env.sh"]
+      - "80:3000"
+    entrypoint: [ "/app/fetch_env.sh" ]

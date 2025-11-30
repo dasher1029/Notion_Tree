@@ -28,6 +28,7 @@
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <script>
     let currentScale = 1;
+    let defaultScale = 1;
     let baseWidth = 0, baseHeight = 0;
     let baseTx = 0, baseTy = 0;
     let svgSelection, gSelection;
@@ -40,7 +41,7 @@
     }
 
     function resetZoom() {
-      currentScale = 1;
+      currentScale = defaultScale;
       updateZoom();
     }
 
@@ -100,6 +101,24 @@
 
         // SVG 선택 및 초기 설정
         svgSelection = d3.select("#tree");
+
+        // 🌟 3. 화면에 맞게 스케일 조정 (Fit to Screen)
+        const container = document.querySelector('.tree-container');
+        const containerWidth = container.clientWidth;
+        const containerHeight = container.clientHeight;
+
+        // 여백을 고려하여 스케일 계산 (0.9는 여유 공간)
+        const scaleX = containerWidth / baseWidth;
+        const scaleY = containerHeight / baseHeight;
+
+        // 트리가 화면보다 크면 축소, 작으면 1 (또는 화면에 꽉 차게 하려면 그냥 min 사용)
+        // "모든 트리가 나오도록" -> 화면에 맞춤
+        defaultScale = Math.min(scaleX, scaleY) * 0.9;
+
+        // 너무 작아지는 것을 방지하려면 최소값 설정 가능 (예: 0.1)
+        if (defaultScale < 0.1) defaultScale = 0.1;
+
+        currentScale = defaultScale;
 
         // 초기 줌 적용 (width/height 설정)
         updateZoom();
