@@ -29,12 +29,13 @@ pipeline {
                     script {
                         sh """
                             cd ${env.WORKSPACE}
-                            
+
                             echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
 
                             docker buildx create --use
 
                             docker buildx build \
+                                --no-cache \
                                 --platform linux/amd64 \
                                 -t $DOCKER_USER/${IMAGE_NAME}:latest \
                                 . \
