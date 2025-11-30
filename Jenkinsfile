@@ -13,6 +13,15 @@ pipeline {
             }
         }
 
+        stage('Clear Docker Cache') {
+            steps {
+                sh """
+                    docker builder prune -f
+                    docker system prune -f
+                """
+            }
+        }
+
         stage('Git Checkout') {
             steps {
                 git url: 'https://github.com/dasher1029/Notion_Tree.git', branch: 'main'
