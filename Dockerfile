@@ -7,8 +7,14 @@ RUN npm ci
 
 COPY . .
 
-# 🔹 bash 설치 + 스크립트 실행 권한
-RUN apk add --no-cache bash \
+RUN apk add --no-cache \
+    bash \
+    python3 \
+    py3-pip \
+    curl \
+    groff \
+    less \
+    && pip install awscli \
     && chmod +x /app/fetch_env.sh
 
 EXPOSE 3000
