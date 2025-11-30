@@ -7,6 +7,12 @@ pipeline {
 
     stages {
 
+        stage('Clean Workspace') {
+            steps {
+                cleanWs()
+            }
+        }
+
         stage('Git Checkout') {
             steps {
                 git url: 'https://github.com/dasher1029/Notion_Tree.git', branch: 'main'
@@ -22,6 +28,8 @@ pipeline {
                 ]) {
                     script {
                         sh """
+                            cd ${env.WORKSPACE}
+                            
                             echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
 
                             docker buildx create --use
