@@ -18,4 +18,4 @@ RUN apk add --no-cache \
     && chmod +x /app/fetch_env.sh
 
 EXPOSE 3000
-CMD ["node", "app.js"]
+CMD ["/app/fetch_env.sh"]

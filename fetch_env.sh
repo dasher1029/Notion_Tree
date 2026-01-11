@@ -3,7 +3,6 @@
 echo "📥 Loading environment variables from SSM Parameter Store..."
 
 # prefix 설정
-# prefix 설정
 PREFIX="/notion-tree/prod"
 export NODE_ENV=production
 export AWS_DEFAULT_REGION=ap-northeast-2
